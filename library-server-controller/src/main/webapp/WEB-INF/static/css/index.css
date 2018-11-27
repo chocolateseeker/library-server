@@ -1,0 +1,37 @@
+.userInfo {
+    width: 100%;
+}
+
+.searchBookDiv {
+    width: 50%;
+    margin: 0 auto;
+}
+
+#searchBookButtoon {
+    width: 100px;
+}
+
+.input-group-sm input {
+    margin: 0 2% 0 0;
+}
+
+.input-group-sm span {
+    margini: 0 0 0 2%;
+}
+
+.bookTableDiv {
+    width: 90%;
+    margin: 0 auto;
+}
+
+.bookRankDiv {
+    width: 48%;
+    float: left;
+    margin: 1%;
+}
+
+.userRankDiv {
+    width: 48%;
+    float: left;
+    margin: 1%;
+}

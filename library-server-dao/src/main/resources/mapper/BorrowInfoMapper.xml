@@ -1,0 +1,67 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bocsoft.library.dao.mapper.BorrowInfoMapper">
+    <insert id="insertBorrowInfo" parameterType="com.bocsoft.library.dao.domain.BorrowInfo">
+        INSERT INTO borrow_info (user_id, book_id, borrow_time, should_return_time) VALUES (#{userId}, #{bookId}, #{borrowTime}, #{shouldReturnTime})
+    </insert>
+
+    <resultMap id="BorrowInfoHistoryMap" type="com.bocsoft.library.dao.domain.BorrowInfoHistory">
+        <result column="borrow_id" property="borrowId"></result>
+        <result column="user_id" property="userId"></result>
+        <result column="book_id" property="bookId"></result>
+        <result column="book_name" property="bookName"></result>
+        <result column="author" property="bookAuthor"></result>
+        <result column="publisher" property="bookPublisher"></result>
+        <result column="borrow_time" property="borrowTime"></result>
+        <result column="should_return_time" property="shouldReturnTime"></result>
+        <result column="actual_return_time" property="actualReturnTime"></result>
+        <result column="returned" property="returned"></result>
+        <result column="renewed" property="renewed"></result>
+    </resultMap>
+
+    <select id="getBorrowInfoHistory" parameterType="String" resultMap="BorrowInfoHistoryMap">
+        SELECT * FROM borrow_info, book WHERE borrow_info.book_id = book.book_id AND borrow_info.user_id = #{userId} ORDER BY borrow_time DESC
+    </select>
+
+    <update id="returnBook" parameterType="String">
+        UPDATE borrow_info SET returned = 1, actual_return_time = #{actualReturnTime} WHERE borrow_id = #{borrowId} AND returned = 0
+    </update>
+
+    <update id="renewBook" parameterType="String">
+        UPDATE borrow_info SET renewed = 1, should_return_time = #{shouldReturnTime} WHERE borrow_id = #{borrowId} AND renewed = 0
+    </update>
+
+    <select id="getShouldReturnTime" resultType="String" parameterType="String">
+        SELECT should_return_time from borrow_info WHERE borrow_id = #{borrowId} AND renewed = 0
+    </select>
+
+    <select id="getBookRank" parameterType="String" resultMap="bookRankMap">
+        SELECT book.book_name, book.author, book.publisher, borrow_info.book_id, COUNT(*) AS borrowedCount FROM borrow_info JOIN book on book.book_id = borrow_info.book_id WHERE borrow_info.borrow_time > #{startTime} GROUP BY borrow_info.book_id ORDER by borrowedCount DESC limit 10
+    </select>
+    <resultMap id="bookRankMap" type="com.bocsoft.library.dao.domain.BookRank">
+        <result column="book_id" property="bookId"></result>
+        <result column="book_name" property="bookName"></result>
+        <result column="author" property="author"></result>
+        <result column="publisher" property="publisher"></result>
+        <result column="borrowedCount" property="borrowedCount"></result>
+    </resultMap>
+
+    <select id="getUserRank" parameterType="String" resultMap="userRankMap">
+        SELECT borrow_info.user_id, user.user_name, user.department, user.team, COUNT(*) AS borrowCount FROM borrow_info JOIN user on user.user_id = borrow_info.user_id WHERE borrow_info.borrow_time > #{startTime} GROUP BY borrow_info.user_id ORDER by borrowCount DESC limit 10
+    </select>
+    <resultMap id="userRankMap" type="com.bocsoft.library.dao.domain.UserRank">
+        <result column="user_name" property="userName"></result>
+        <result column="user_id" property="userId"></result>
+        <result column="department" property="department"></result>
+        <result column="team" property="team"></result>
+        <result column="borrowCount" property="borrowCount"></result>
+    </resultMap>
+
+    <select id="getBookIdByBorrowId" parameterType="String" resultType="String">
+        SELECT book_id FROM borrow_info WHERE borrow_id = #{borrowId}
+    </select>
+
+    <select id="getBorrowInfoByBorrowId" parameterType="String" resultType="com.bocsoft.library.dao.domain.BorrowInfo">
+        SELECT * FROM borrow_info WHERE borrow_id = #{borrowId}
+    </select>
+</mapper>

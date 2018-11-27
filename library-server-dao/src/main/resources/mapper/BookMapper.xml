@@ -1,0 +1,51 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bocsoft.library.dao.mapper.BookMapper">
+    <resultMap id="SearchBookResultMap" type="com.bocsoft.library.dao.domain.Book">
+        <result column="book_id" property="bookId"/>
+        <result column="book_name" property="bookName"/>
+        <result column="publisher" property="publisher"/>
+        <result column="author" property="author"/>
+        <result column="type" property="type"/>
+        <result column="owner" property="owner"/>
+        <result column="book_shelf" property="bookShelf"/>
+        <result column="total" property="total"/>
+        <result column="rest" property="rest"/>
+    </resultMap>
+    <select id="searchBook" resultMap="SearchBookResultMap" parameterType="com.bocsoft.library.dao.domain.Book">
+        SELECT * FROM book
+        <where>
+            <if test="bookName != null and bookName != ''">
+                AND lower(book.book_name) LIKE LOWER (#{bookName,jdbcType=VARCHAR}) ESCAPE '/'
+            </if>
+            <if test="author != null and author != ''">
+                AND lower(book.author) LIKE LOWER (#{author,jdbcType=VARCHAR}) ESCAPE '/'
+            </if>
+            <if test="publisher != null and publisher != ''">
+                AND lower(book.publisher) LIKE LOWER (#{publisher,jdbcType=VARCHAR}) ESCAPE '/'
+            </if>
+            <if test="type != null and type != ''">
+                AND lower(book.type) LIKE LOWER (#{type,jdbcType=VARCHAR}) ESCAPE '/'
+            </if>
+            <if test="owner != null and team != ''">
+                AND lower(book.owner) LIKE LOWER (#{owner,jdbcType=VARCHAR}) ESCAPE '/'
+            </if>
+            <if test="rest != null and rest != ''">
+                AND book.rest >= #{rest}
+            </if>
+        </where>
+        ORDER BY book_id
+    </select>
+
+    <update id = "updateBookRest" parameterType="String">
+        UPDATE book SET rest = (rest-1) WHERE book_id = #{bookId}
+    </update>
+
+    <select id="getBookById" resultMap="SearchBookResultMap" resultType="com.bocsoft.library.dao.domain.Book" parameterType="String">
+        SELECT * FROM book WHERE book_id = #{bookId}
+    </select>
+
+    <update id="addBookRest" parameterType="String">
+        UPDATE book set rest = (rest+1) WHERE book_id = #{bookId}
+    </update>
+</mapper>

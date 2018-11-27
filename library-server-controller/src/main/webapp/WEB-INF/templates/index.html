@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>图书馆首页</title>
+    <link type="text/css" rel="stylesheet" href="/js/bootstrap-4.1.3/css/bootstrap.css"/>
+    <link type="text/css" rel="stylesheet" href="/css/index.css"/>
+    <script type="text/javascript" src="/js/popper/umd/popper.js"></script>
+    <script type="text/javascript" src="/js/jquery-3.3.1.js"></script>
+    <script type="text/javascript" src="/js/bootstrap-4.1.3/js/bootstrap.js"></script>
+</head>
+<body>
+
+<div class="userInfo">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#" id="userName"></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#" id="department"> <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="#" id="team"> <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item active">
+                    <button type="button" class="btn btn-light" id="logoutButton" onclick="logout()">退出</button>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
+
+<div class="card text-center">
+    <div class="card-header">
+        <ul class="nav nav-tabs card-header-tabs">
+            <li class="nav-item">
+                <a class="nav-link active" href="#" id="bookCard" onclick="cardSelected(this)">搜索图书</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" id="historyCard" onclick="cardSelected(this)">借阅历史</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" id="rankCard" onclick="cardSelected(this)">排行榜</a>
+            </li>
+        </ul>
+    </div>
+    <div class="card-body">
+        <div class="bookDiv">
+            <div class="searchBookDiv">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">书名</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="Sizing example input"
+                           aria-describedby="inputGroup-sizing-default" id="bookName">
+                    <button class="btn btn-outline-success my-2 my-sm-0" type="button" id="searchBookButtoon"
+                            onclick="searchBook()">搜索
+                    </button>
+                </div>
+
+                <div class="input-group mb-3 input-group-sm">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">类别</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="Sizing example input"
+                           aria-describedby="inputGroup-sizing-default" id="bookType">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">作者</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="Sizing example input"
+                           aria-describedby="inputGroup-sizing-default" id="bookAuthor">
+                </div>
+                <div class="input-group mb-3 input-group-sm">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">出版社</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="Sizing example input"
+                           aria-describedby="inputGroup-sizing-default" id="bookPublisher">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">所属团队</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="Sizing example input"
+                           aria-describedby="inputGroup-sizing-default" id="bookOwner">
+                </div>
+            </div>
+            <div class="bookTableDiv">
+                <table class="table table-bordered table-hover">
+                    <thead class="thead-light">
+                    <tr>
+                        <th scope="col">编号</th>
+                        <th scope="col">书名</th>
+                        <th scope="col">作者</th>
+                        <th scope="col">出版社</th>
+                        <th scope="col">类别</th>
+                        <th scope="col">书架号</th>
+                        <th scope="col">所属团队</th>
+                        <th scope="col">库存总数</th>
+                        <th scope="col">当前可借</th>
+                        <th scope="col">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="bookTbody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="historyDiv" style="display: none">
+            <div class="historyTableDiv">
+                <table class="table table-bordered table-hover">
+                    <thead class="thead-light">
+                    <tr>
+                        <th scope="col">图书编号</th>
+                        <th scope="col">书名</th>
+                        <th scope="col">作者</th>
+                        <th scope="col">借书时间</th>
+                        <th scope="col">应还时间</th>
+                        <th scope="col">实际还书时间</th>
+                        <th scope="col" colspan="2">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="historyTbody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <div class="rankDiv" style="display: none">
+            <div class="form-group" style="width:30%;margin:0 auto;">
+                <label>时间</label>
+                <select class="form-control" id="rankTime" onchange="getRank()">
+                    <option value="oneMonth">最近一个月</option>
+                    <option value="threeMonths">最近三个月</option>
+                    <option value="oneYear">最近一年</option>
+                    <option value="all">全部</option>
+                </select>
+            </div>
+            <div class="bookRankDiv">
+                <table class="table table-bordered table-hover">
+                    <caption>热门书籍榜</caption>
+                    <thead class="thead-light">
+                    <tr>
+                        <th scope="col">编号</th>
+                        <th scope="col">书名</th>
+                        <th scope="col">作者</th>
+                        <th scope="col">出版社</th>
+                        <th scope="col">借阅次数</th>
+                    </tr>
+                    </thead>
+                    <tbody id="bookRankTbody">
+                    </tbody>
+                </table>
+            </div>
+            <div class="userRankDiv">
+                <table class="table table-bordered table-hover">
+                    <caption>读者借阅榜</caption>
+                    <thead class="thead-light">
+                    <tr>
+                        <th scope="col">姓名</th>
+                        <th scope="col">部门</th>
+                        <th scope="col">团队</th>
+                        <th scope="col">借书次数</th>
+                    </tr>
+                    </thead>
+                    <tbody id="userRankTbody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+    <script>
+        function logout() {
+            $.ajax({
+                url: "/library/logout",
+                type: "post",
+                success: function (loginUrl) {
+                    window.location.href = loginUrl;
+                }
+            })
+        }
+
+        function cardSelected(card) {
+            if (!$(card).hasClass("active")) {
+                $(card).parent().siblings().children("a").removeClass("active");
+                $(card).addClass("active");
+            }
+            switch ($(card).attr("id")) {
+                case "bookCard":
+                    $(".bookDiv").show();
+                    $(".bookDiv").siblings().hide();
+                    searchBook();
+                    break;
+                case "historyCard":
+                    $(".historyDiv").show();
+                    $(".historyDiv").siblings().hide();
+                    getHistory();
+                    break;
+                case "rankCard":
+                    $(".rankDiv").show();
+                    $(".rankDiv").siblings().hide();
+                    getRank();
+                    break;
+            }
+        }
+
+        $(document).ready(function () {
+            $.ajax({
+                url: "/library/getSessionUserInfo",
+                type: "get",
+                success: function (data) {
+                    document.getElementById("userName").innerHTML = data.userName;
+                    document.getElementById("department").innerHTML = data.department;
+                    document.getElementById("team").innerHTML = data.team;
+                }
+            })
+            searchBook();
+            ;
+        })
+
+        function getHistory() {
+            var pageIndex = 1;
+            var limit = 10;
+            $.ajax({
+                url: "/library/borrowInfo/getHistory",
+                type: "post",
+                dataType: "json",
+                contentType:"application/json",
+                data: JSON.stringify({"pageIndex":pageIndex,"limit":limit}),
+                success: function (data) {
+                    var historyStr = "";
+                    for (var i = 0; i < data.length; i++) {
+                        historyStr += "<tr><td class='bookId'>" + data[i].bookId + "</td>"
+                            + "<td>" + data[i].bookName + "</td>"
+                            + "<td>" + data[i].bookAuthor + "</td>"
+                            + "<td class='borrowTime'>" + data[i].borrowTime + "</td>"
+                            + "<td>" + data[i].shouldReturnTime + "</td>";
+                        if (data[i].actualReturnTime == null || data[i].actualReturnTime == "") {
+                            historyStr += "<td>未还书</td>";
+                        } else {
+                            historyStr += "<td>" + data[i].actualReturnTime + "</td>";
+                        }
+                        if (data[i].renewed == 1) {
+                            //已续借
+                            historyStr += "<td><button type='button' class='btn btn-info btn-sm renewButton' disabled>已续借</button></td>";
+                        } else if (data[i].returned == 1) {
+                            //已还书
+                            historyStr += "<td><button type='button' class='btn btn-info btn-sm renewButton' disabled>已还书</button></td>";
+                        } else {
+                            historyStr += "<td><button type='button' class='btn btn-info btn-sm renewButton' onclick='renewBook(this)'>续借</button></td>";
+                        }
+                        if (data[i].returned == 1) {
+                            historyStr += "<td><button type='button' class='btn btn-info btn-sm returnButton' disabled>已还书</button></td>";
+                        } else {
+                            historyStr += "<td><button type='button' class='btn btn-info btn-sm returnButton' onclick='returnBook(this)'>还书</button></td>";
+                        }
+                    }
+                    $("#historyTbody").empty();
+                    $("#historyTbody").append(historyStr);
+                }
+            })
+        }
+
+        function getRank() {
+            var timeLimit = $("#rankTime option:selected").val();
+            $.ajax({
+                url: "/library/borrowInfo/getRank",
+                data: {"timeLimit": timeLimit},
+                dataType: "json",
+                type: "post",
+                success: function (data) {
+                    var bookList = data.bookList;
+                    var userList = data.userList;
+                    if (bookList == null || bookList.length == 0) {
+                        $("#bookRankTbody").empty();
+                        $("#bookRankTbody").append("没有符合条件的书");
+                    }
+                    if (bookList == null || bookList.length == 0) {
+                        $("#userRankTbody").empty();
+                        $("#userRankTbody").append("没有符合条件的用户");
+                    }
+                    var bookRankStr = "";
+                    var userRankStr = "";
+                    for (var i = 0; i < bookList.length; i++) {
+                        bookRankStr += "<tr><td>" + bookList[i].bookId + "</td>"
+                            + "<td>" + bookList[i].bookName + "</td>"
+                            + "<td>" + bookList[i].author + "</td>"
+                            + "<td>" + bookList[i].publisher + "</td>"
+                            + "<td>" + bookList[i].borrowedCount + "</td></tr>";
+                    }
+                    $("#bookRankTbody").empty();
+                    $("#bookRankTbody").append(bookRankStr);
+
+                    for (var i = 0; i < userList.length; i++) {
+                        userRankStr += "<tr><td>" + userList[i].userName + "</td>"
+                            + "<td>" + userList[i].department + "</td>"
+                            + "<td>" + userList[i].team + "</td>"
+                            + "<td>" + userList[i].borrowCount + "</td></tr>";
+                    }
+                    $("#userRankTbody").empty();
+                    $("#userRankTbody").append(userRankStr);
+                },
+                error: function () {
+                    alert("获取排行榜失败");
+                }
+            })
+        }
+
+        function returnBook(returnButton) {
+            var bookId = $(returnButton).parent().siblings(".bookId").text();
+            var borrowTime = $(returnButton).parent().siblings(".borrowTime").text();
+            $.ajax({
+                url: "/library/book/returnBook",
+                type: "post",
+                dataType: "json",
+                data: {"bookId": bookId, "borrowTime": borrowTime},
+                success: function (data) {
+                    if (data == 0) {
+                        alert("还书成功");
+                        getHistory();
+                    } else {
+                        alert("还书失败");
+                    }
+                },
+                error: function () {
+                    alert("还书失败");
+                }
+            })
+        }
+
+        function renewBook(renewButton) {
+            var bookId = $(renewButton).parent().siblings(".bookId").text();
+            var borrowTime = $(renewButton).parent().siblings(".borrowTime").text();
+            $.ajax({
+                url: "/library/book/renewBook",
+                type: "post",
+                dataType: "json",
+                data: {"bookId": bookId, "borrowTime": borrowTime},
+                success: function (data) {
+                    if (data == 0) {
+                        alert("续借成功");
+                        getHistory();
+                    } else {
+                        alert("续借失败");
+                    }
+                }
+            })
+        }
+
+        function searchBook() {
+            var bookName = $("#bookName").val();
+            var bookAuthor = $("#bookAuthor").val();
+            var bookPublisher = $("#bookPublisher").val();
+            var bookType = $("#bookType").val();
+            var bookOwner = $("#bookOwner").val();
+            $.ajax({
+                url: "/library/book/searchBook",
+                dataType: "json",
+                type: "post",
+                contentType:"application/json",
+                data: JSON.stringify({"bookName":bookName, "type":bookType, "author":bookAuthor, "publisher":bookPublisher,"owner":bookOwner}),
+                success: function (data) {
+                    var books = data.books;
+                    var bookStr = "";
+                    for (var i = 0; i < books.length; i++) {
+                        bookStr += "<tr>";
+                        bookStr += "<td>" + books[i].bookId + "</td>";
+                        bookStr += "<td>" + books[i].bookName + "</td>";
+                        bookStr += "<td>" + books[i].author + "</td>";
+                        bookStr += "<td>" + books[i].publisher + "</td>";
+                        bookStr += "<td>" + books[i].type + "</td>";
+                        bookStr += "<td>" + books[i].bookshelf + "</td>";
+                        bookStr += "<td>" + books[i].owner + "</td>";
+                        bookStr += "<td>" + books[i].total + "</td>";
+                        bookStr += "<td>" + books[i].rest + "</td>";
+                        bookStr += "<td>" + "<button  class = 'borrowButton btn btn-info btn-sm' onclick='borrowBook(this)' id = borrow_" + books[i].bookId + "> 借书 </td>";
+                        bookStr += "</tr>"
+                    }
+                    $("#bookTbody").empty();
+                    $("#bookTbody").append(bookStr);
+                }
+            })
+        }
+    </script>
+    <script>
+        function borrowBook(button) {
+            var idArr = button.id.split("_");
+            var bookId = idArr[1];
+            $.ajax({
+                url: "/library/book/borrowBook",
+                type: "post",
+                dataType: "json",
+                data: "bookId=" + bookId,
+                success: function (data) {
+                    switch (data) {
+                        case 0:
+                            alert("借书成功！");
+                            searchBook();
+                            break;
+                        case -1:
+                            break;
+                        case -2:
+                            alert("库存不足！");
+                            break;
+                    }
+                },
+                error: function () {
+                    alert("借书失败！");
+                }
+            })
+        }
+    </script>
+</body>
+</html>
